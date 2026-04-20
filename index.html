@@ -84,6 +84,36 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </style>
 </head>
 <body>
+    <!-- BEAKON Access Gate — blocks direct github.io access, requires hub token -->
+    <script>
+    (function() {
+        var HUB    = 'https://www.salesbeakon.com';
+        var TOKEN  = 'gst4p9x2k7m1n8q3w6e0r5y';
+        var LS_KEY = 'beakon_gulfstream_gate';
+        var LS_TTL = 7 * 24 * 60 * 60 * 1000; // 7-day session
+        var host   = window.location.hostname;
+
+        if (host.indexOf('github.io') !== -1) {
+            window.location.replace(HUB); return;
+        }
+
+        var params   = new URLSearchParams(window.location.search);
+        var urlToken = params.get('t');
+        var stored   = null;
+        try { stored = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch(e) {}
+
+        var ok = false;
+        if (urlToken === TOKEN) {
+            localStorage.setItem(LS_KEY, JSON.stringify({ expires: Date.now() + LS_TTL }));
+            ok = true;
+            history.replaceState(null, '', window.location.pathname);
+        } else if (stored && stored.expires > Date.now()) {
+            ok = true;
+        }
+
+        if (!ok) { window.location.replace(HUB); }
+    })();
+    </script>
 
 <!-- ══ DYNAMIC DATA STORE — updated by refresh script every 5 days ══ -->
 <script>
